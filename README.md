@@ -1,112 +1,61 @@
 # README
 
-## Explication du fonctionnement et des calculs
+## Explication des calculs effectués dans l'application
 
-Cette application a pour objectif de comparer l’évolution de deux ETF (Exchange Traded Funds) à travers deux grandes étapes :
+Cette application permet de simuler l'évolution de deux ETF (Exchange Traded Funds) à travers deux phases principales : l'accumulation et la décumulation.
 
-1. **La phase d’accumulation** (constitution du capital)
-2. **La phase de décumulation** (utilisation du capital pour générer des retraits)
+### Phase d'accumulation
 
-Le code principal se trouve dans [`script.js`](./script.js). Ci-dessous, un aperçu détaillé de chacun des calculs et des paramètres utilisés.
+1. **Paramètres de départ :**
+   - **Capital initial :** 20 000 €
+   - **Versement mensuel :** 350 €
+   - **Performance annuelle :** 7 %
 
----
-
-### 1. Phase d’accumulation
-
-1. **Récupération des paramètres**
-
-   - Capital initial \(\text{(initialCapital)}\)
-   - Versement mensuel \(\text{(monthlyDeposit)}\)
-   - Nombre d’années d’accumulation \(\text{(accumulationYears)}\)
-   - Rendement annuel \(\text{(annualReturn)}\) exprimé en pourcentage
-   - Frais annuels de gestion pour ETF1 et ETF2 \(\text{(feeETF1, feeETF2)}\)
-
-2. **Calculs préliminaires**
-
-   - Rendement mensuel brut  
+2. **Calcul du facteur mensuel :**
+   - Pour convertir une performance annuelle de 7 % en un facteur mensuel, on utilise la formule :
      \[
-     \text{monthlyGross} = (1 + \text{annualReturn})^{\frac{1}{12}}
+     \text{Facteur mensuel} = (1 + 0{,}07)^{\frac{1}{12}} \approx 1{,}005654
      \]
-   - Frais mensuels estimés (en divisant les frais annuels par 12)  
+   - Cela signifie que chaque mois, le capital est multiplié par environ 1,005654, soit une croissance mensuelle d'environ 0,565 %.
+
+3. **Calcul mensuel :**
+   - Chaque mois, le calcul est le suivant :
      \[
-     \text{monthlyFeeETF1} = \frac{\text{feeETF1}}{12}, \quad
-     \text{monthlyFeeETF2} = \frac{\text{feeETF2}}{12}
+     \text{Nouveau capital} = (\text{Ancien capital} + \text{Versement mensuel}) \times \text{Facteur mensuel}
      \]
-   - Rendement mensuel net pour chaque ETF  
+   - Par exemple, pour le premier mois :
      \[
-     \text{monthlyNetETF1} = \text{monthlyGross} - \text{monthlyFeeETF1},\quad
-     \text{monthlyNetETF2} = \text{monthlyGross} - \text{monthlyFeeETF2}
+     \text{Nouveau capital} = (20\,000 + 350) \times 1,005654 \approx 20\,465{,}01\,\text{€}
      \]
 
-3. **Boucle de simulation**  
-   On itère chaque mois pendant \(\text{accumulationYears} \times 12\) mois :  
-   \[
-   \text{balanceETF} = (\text{balanceETF} + \text{monthlyDeposit}) \times \text{monthlyNetETF}
-   \]
-   Les valeurs intermédiaires (une fois par an) sont enregistrées afin de produire un tableau d’évolution annuel.
+4. **Suivi annuel :**
+   - Ce calcul est répété chaque mois, et à la fin de chaque année, le capital est enregistré pour suivre l'évolution de l'investissement.
 
-4. **Résultat de la phase d’accumulation**  
-   Au terme de ces calculs, on obtient :
-   - Le capital final de chaque ETF.
-   - Le total investi \(\text{(initialCapital + monthlyDeposit \* nombreDeMois)}\).
-   - Un tableau affichant l’évolution du capital année par année pour chaque ETF.
+### Phase de décumulation
 
----
+1. **Paramètres de décumulation :**
+   - **Nombre d'années de retraite :** Variable
+   - **Retrait net annuel souhaité :** Variable
+   - **Taux d'imposition :** Variable pour chaque ETF
 
-### 2. Phase de décumulation
-
-1. **Paramètres de décumulation**
-
-   - Nombre d’années de retraite \(\text{(retirementYears)}\)
-   - Retrait net annuel souhaité \(\text{(netWithdrawalAnnual)}\)
-   - Taux d’imposition pour ETF1 et ETF2 \(\text{(taxETF1, taxETF2)}\)
-
-2. **Calculs préliminaires**
-
-   - Rendement net annuel (bâti sur le rendement mensuel net) :  
+2. **Calculs préliminaires :**
+   - Rendement net annuel basé sur le rendement mensuel net :
      \[
-     \text{annualNetETF1} = \bigl(\text{monthlyNetETF1}\bigr)^{12}, \quad
-     \text{annualNetETF2} = \bigl(\text{monthlyNetETF2}\bigr)^{12}
+     \text{Rendement net annuel} = \bigl(\text{Facteur mensuel net}\bigr)^{12}
      \]
-   - Pour obtenir le retrait « brut » correspondant au retrait « net » souhaité, on tient compte de la taxe associée à chaque ETF :  
+   - Calcul du retrait brut en tenant compte de la taxe :
      \[
-     \text{withdrawalGrossETF} = \frac{\text{netWithdrawalAnnual}}{1 - \text{taxETF}}
+     \text{Retrait brut} = \frac{\text{Retrait net souhaité}}{1 - \text{Taux d'imposition}}
      \]
 
-3. **Boucle de simulation annuelle**  
-   À chaque fin d’année de retraite :
+3. **Simulation annuelle :**
+   - À chaque fin d'année de retraite, on calcule :
+     - Les intérêts gagnés
+     - Le capital après retrait
 
-   - On calcule les intérêts :  
-     \[
-     \text{interestETF} = \text{startingBalanceETF} \times \bigl(\text{annualNetETF} - 1\bigr)
-     \]
-   - Le capital en fin d’année après retrait :  
-      \[
-     \text{endingBalanceETF} = \text{startingBalanceETF} \times \text{annualNetETF}
-     \;-\; \text{withdrawalGrossETF}
-     \]
-     Les résultats sont enregistrés pour chaque année de retraite.
-
-4. **Résultat de la phase de décumulation**
-   - Tableau affichant pour chaque année :
-     1. Le capital de départ.
-     2. Les intérêts gagnés.
-     3. Le montant retiré (brut).
-     4. Le capital final de l’année.
-
----
-
-## Visualisation des résultats
-
-- Un tableau récapitule l’évolution du capital pendant la phase d’accumulation.
-- Un second tableau affiche, chaque année, l’évolution du capital pendant la phase de décumulation.
-- Des résumés (capital final, total investi, etc.) sont également affichés pour faciliter la lecture.
+4. **Résultats :**
+   - Un tableau affiche l'évolution du capital chaque année, avec les intérêts gagnés et les retraits effectués.
 
 ## Conclusion
 
-L’application vous permet ainsi de :
-
-- **Simuler** la constitution d’un capital sur la durée, avec des versements mensuels et un rendement donné, en tenant compte de frais annuels.
-- **Estimer** la manière dont ce capital peut financer une retraite grâce à des retraits réguliers, en intégrant l’impact de la fiscalité propre à chaque ETF.
-
-Vous pouvez ajuster les différents champs du formulaire pour comparer des scénarios et mieux appréhender l’impact du rendement, des frais et de la fiscalité sur l’évolution de votre patrimoine au fil du temps.
+L'application vous permet de simuler la constitution et l'utilisation d'un capital sur la durée, en tenant compte des performances annuelles, des versements mensuels, des frais et de la fiscalité. Vous pouvez ajuster les paramètres pour explorer différents scénarios et mieux comprendre l'impact de ces facteurs sur votre patrimoine.
