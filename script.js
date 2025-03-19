@@ -51,6 +51,10 @@ function simulate() {
   // Simulation de la phase d'accumulation
   const accumulationDataETF1 = [];
   const accumulationDataETF2 = [];
+  
+  // Création d'une structure pour stocker les données mensuelles
+  const monthlyDataETF1 = {};
+  const monthlyDataETF2 = {};
 
   let balanceETF1 = initialCapital;
   let balanceETF2 = initialCapital;
@@ -59,6 +63,19 @@ function simulate() {
     // Ajout du versement mensuel et application du facteur mensuel net
     balanceETF1 = (balanceETF1 + monthlyDeposit) * monthlyNetETF1;
     balanceETF2 = (balanceETF2 + monthlyDeposit) * monthlyNetETF2;
+
+    // Calculer l'année et le mois courants
+    const year = Math.ceil(month / 12);
+    const monthIndex = (month - 1) % 12;
+    
+    // Stocker les données mensuelles
+    if (!monthlyDataETF1[year]) {
+      monthlyDataETF1[year] = Array(12).fill(null);
+      monthlyDataETF2[year] = Array(12).fill(null);
+    }
+    
+    monthlyDataETF1[year][monthIndex] = balanceETF1;
+    monthlyDataETF2[year][monthIndex] = balanceETF2;
 
     // Enregistrer les données à la fin de chaque année (tous les 12 mois)
     if (month % 12 === 0) {
@@ -125,13 +142,43 @@ function simulate() {
 
   html += "<h2>Phase d'accumulation</h2>";
   html += "<div class='table-container'>";
-  html += "<table><thead><tr><th>Année</th><th>Balance ETF1</th><th>Balance ETF2</th></tr></thead><tbody>";
+  html += "<table class='main-table'><thead><tr><th>Année</th><th>Balance ETF1</th><th>Balance ETF2</th></tr></thead><tbody>";
   
   for (let i = 0; i < accumulationDataETF1.length; i++) {
-    html += "<tr>";
-    html += "<td>" + accumulationDataETF1[i].year + "</td>";
+    const year = accumulationDataETF1[i].year;
+    html += "<tr class='year-row' data-year='" + year + "'>";
+    html += "<td class='clickable-year'>" + year + "</td>";
     html += "<td>" + formatEuros(accumulationDataETF1[i].balance) + "</td>";
     html += "<td>" + formatEuros(accumulationDataETF2[i].balance) + "</td>";
+    html += "</tr>";
+    
+    // Ajouter une ligne pour les détails mensuels (initialement cachée)
+    html += "<tr class='monthly-details' id='monthly-details-" + year + "' style='display: none;'>";
+    html += "<td colspan='3' style='padding: 0;'>";
+    
+    // Table des détails mensuels avec classes spécifiques pour l'alignement
+    html += "<table class='monthly-table'>";
+    html += "<thead class='monthly-header'>";
+    html += "<tr>";
+    html += "<th class='month-column'>Mois</th>";
+    html += "<th class='etf1-column'>ETF1</th>";
+    html += "<th class='etf2-column'>ETF2</th>";
+    html += "</tr>";
+    html += "</thead>";
+    html += "<tbody>";
+    
+    const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+    
+    for (let month = 0; month < 12; month++) {
+      html += "<tr>";
+      html += "<td class='month-column'>" + monthNames[month] + "</td>";
+      html += "<td class='etf1-column'>" + formatEuros(monthlyDataETF1[year][month]) + "</td>";
+      html += "<td class='etf2-column'>" + formatEuros(monthlyDataETF2[year][month]) + "</td>";
+      html += "</tr>";
+    }
+    
+    html += "</tbody></table>";
+    html += "</td>";
     html += "</tr>";
   }
   html += "</tbody></table></div>";
@@ -170,6 +217,26 @@ function simulate() {
   html += "</tbody></table></div>";
 
   resultsDiv.innerHTML = html;
+  
+  // Ajouter des écouteurs d'événements pour les lignes d'années cliquables
+  const yearRows = document.querySelectorAll('.year-row');
+  yearRows.forEach(row => {
+    row.addEventListener('click', function() {
+      const year = this.getAttribute('data-year');
+      const detailsRow = document.getElementById('monthly-details-' + year);
+      
+      // Toggle l'affichage des détails mensuels
+      if (detailsRow.style.display === 'none') {
+        // Cacher tous les autres détails mensuels d'abord
+        document.querySelectorAll('.monthly-details').forEach(el => {
+          el.style.display = 'none';
+        });
+        detailsRow.style.display = 'table-row';
+      } else {
+        detailsRow.style.display = 'none';
+      }
+    });
+  });
   
   // Faire défiler jusqu'au début des résultats
   document.querySelector(".content").scrollTop = 0;

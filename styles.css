@@ -151,6 +151,25 @@ table {
   border-collapse: collapse;
 }
 
+.main-table {
+  table-layout: fixed;
+}
+
+.main-table th:first-child,
+.main-table td:first-child {
+  width: 33.33%;
+}
+
+.main-table th:nth-child(2),
+.main-table td:nth-child(2) {
+  width: 33.33%;
+}
+
+.main-table th:nth-child(3),
+.main-table td:nth-child(3) {
+  width: 33.33%;
+}
+
 th, td {
   padding: 0.8rem;
   text-align: center;
@@ -177,6 +196,60 @@ tr:last-child td {
 
 tr:hover {
   background-color: rgba(37, 99, 235, 0.1) !important;
+}
+
+.year-row {
+  cursor: pointer;
+}
+
+.year-row:hover {
+  background-color: rgba(37, 99, 235, 0.15) !important;
+}
+
+.clickable-year {
+  font-weight: 500;
+  text-decoration: underline;
+  color: var(--primary-color);
+}
+
+.clickable-year:hover {
+  color: var(--primary-hover);
+}
+
+.monthly-details td {
+  padding: 0;
+}
+
+.monthly-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  margin: 0;
+  background-color: #eef2ff;
+}
+
+.monthly-header {
+  background-color: rgba(37, 99, 235, 0.2);
+}
+
+.monthly-table th,
+.monthly-table td {
+  padding: 0.6rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.9rem;
+}
+
+.month-column {
+  width: 33.33%;
+}
+
+.etf1-column {
+  width: 33.33%;
+}
+
+.etf2-column {
+  width: 33.33%;
 }
 
 .etf1-row {
