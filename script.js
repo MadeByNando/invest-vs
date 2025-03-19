@@ -200,7 +200,7 @@ function simulate() {
 
   html += "<h2>Phase de décumulation</h2>";
   html += "<div class='table-container'>";
-  html += "<table><thead><tr><th>Année</th><th>Capital initial</th><th>Intérêts</th><th>Retrait</th><th>Capital final</th></tr></thead><tbody>";
+  html += "<table><thead><tr><th>Année</th><th>ETF</th><th>Capital initial</th><th>Intérêts</th><th>Retrait</th><th>Capital final</th></tr></thead><tbody>";
   
   const decumulationStartYear = currentYear + accumulationYears;
   for (let i = 0; i < decumulationDataETF1.length; i++) {
@@ -208,6 +208,7 @@ function simulate() {
     // Ligne pour ETF1
     html += "<tr class='etf1-row'>";
     html += "<td rowspan='2'>" + decumulationYear + "</td>";
+    html += "<td>ETF1</td>";
     html += "<td>" + formatEuros(decumulationDataETF1[i].startingBalance) + "</td>";
     html += "<td>" + formatEuros(decumulationDataETF1[i].interest) + "</td>";
     html += "<td>" + formatEuros(decumulationDataETF1[i].withdrawal) + "</td>";
@@ -216,6 +217,7 @@ function simulate() {
     
     // Ligne pour ETF2
     html += "<tr class='etf2-row'>";
+    html += "<td>ETF2</td>";
     html += "<td>" + formatEuros(decumulationDataETF2[i].startingBalance) + "</td>";
     html += "<td>" + formatEuros(decumulationDataETF2[i].interest) + "</td>";
     html += "<td>" + formatEuros(decumulationDataETF2[i].withdrawal) + "</td>";
