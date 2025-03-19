@@ -37,6 +37,9 @@ function simulate() {
   const taxETF2 =
     parseFloat(document.getElementById("taxETF2").value) / 100;
 
+  // Obtenir l'année actuelle pour l'affichage des dates
+  const currentYear = new Date().getFullYear();
+
   // Calcul du facteur mensuel brut issu du rendement annuel
   const monthlyGross = Math.pow(1 + annualReturn, 1 / 12);
   // Calcul des frais mensuels (appliqués de façon linéaire)
@@ -65,23 +68,25 @@ function simulate() {
     balanceETF2 = (balanceETF2 + monthlyDeposit) * monthlyNetETF2;
 
     // Calculer l'année et le mois courants
-    const year = Math.ceil(month / 12);
+    const simulationYear = Math.ceil(month / 12);
+    const calendarYear = currentYear + simulationYear - 1;
     const monthIndex = (month - 1) % 12;
     
     // Stocker les données mensuelles
-    if (!monthlyDataETF1[year]) {
-      monthlyDataETF1[year] = Array(12).fill(null);
-      monthlyDataETF2[year] = Array(12).fill(null);
+    if (!monthlyDataETF1[calendarYear]) {
+      monthlyDataETF1[calendarYear] = Array(12).fill(null);
+      monthlyDataETF2[calendarYear] = Array(12).fill(null);
     }
     
-    monthlyDataETF1[year][monthIndex] = balanceETF1;
-    monthlyDataETF2[year][monthIndex] = balanceETF2;
+    monthlyDataETF1[calendarYear][monthIndex] = balanceETF1;
+    monthlyDataETF2[calendarYear][monthIndex] = balanceETF2;
 
     // Enregistrer les données à la fin de chaque année (tous les 12 mois)
     if (month % 12 === 0) {
-      const year = Math.floor(month / 12);
-      accumulationDataETF1.push({ year: year, balance: balanceETF1 });
-      accumulationDataETF2.push({ year: year, balance: balanceETF2 });
+      const simulationYear = Math.floor(month / 12);
+      const calendarYear = currentYear + simulationYear - 1;
+      accumulationDataETF1.push({ year: simulationYear, calendarYear: calendarYear, balance: balanceETF1 });
+      accumulationDataETF2.push({ year: simulationYear, calendarYear: calendarYear, balance: balanceETF2 });
     }
   }
 
@@ -145,15 +150,16 @@ function simulate() {
   html += "<table class='main-table'><thead><tr><th>Année</th><th>Balance ETF1</th><th>Balance ETF2</th></tr></thead><tbody>";
   
   for (let i = 0; i < accumulationDataETF1.length; i++) {
-    const year = accumulationDataETF1[i].year;
-    html += "<tr class='year-row' data-year='" + year + "'>";
-    html += "<td class='clickable-year'>" + year + "</td>";
+    const simulationYear = accumulationDataETF1[i].year;
+    const calendarYear = accumulationDataETF1[i].calendarYear;
+    html += "<tr class='year-row' data-year='" + calendarYear + "'>";
+    html += "<td class='clickable-year'>" + calendarYear + "</td>";
     html += "<td>" + formatEuros(accumulationDataETF1[i].balance) + "</td>";
     html += "<td>" + formatEuros(accumulationDataETF2[i].balance) + "</td>";
     html += "</tr>";
     
     // Ajouter une ligne pour les détails mensuels (initialement cachée)
-    html += "<tr class='monthly-details' id='monthly-details-" + year + "' style='display: none;'>";
+    html += "<tr class='monthly-details' id='monthly-details-" + calendarYear + "' style='display: none;'>";
     html += "<td colspan='3' style='padding: 0;'>";
     
     // Table des détails mensuels avec classes spécifiques pour l'alignement
@@ -172,8 +178,8 @@ function simulate() {
     for (let month = 0; month < 12; month++) {
       html += "<tr>";
       html += "<td class='month-column'>" + monthNames[month] + "</td>";
-      html += "<td class='etf1-column'>" + formatEuros(monthlyDataETF1[year][month]) + "</td>";
-      html += "<td class='etf2-column'>" + formatEuros(monthlyDataETF2[year][month]) + "</td>";
+      html += "<td class='etf1-column'>" + formatEuros(monthlyDataETF1[calendarYear][month]) + "</td>";
+      html += "<td class='etf2-column'>" + formatEuros(monthlyDataETF2[calendarYear][month]) + "</td>";
       html += "</tr>";
     }
     
@@ -196,10 +202,12 @@ function simulate() {
   html += "<div class='table-container'>";
   html += "<table><thead><tr><th>Année</th><th>Capital initial</th><th>Intérêts</th><th>Retrait</th><th>Capital final</th></tr></thead><tbody>";
   
+  const decumulationStartYear = currentYear + accumulationYears;
   for (let i = 0; i < decumulationDataETF1.length; i++) {
+    const decumulationYear = decumulationStartYear + i;
     // Ligne pour ETF1
     html += "<tr class='etf1-row'>";
-    html += "<td rowspan='2'>" + decumulationDataETF1[i].year + "</td>";
+    html += "<td rowspan='2'>" + decumulationYear + "</td>";
     html += "<td>" + formatEuros(decumulationDataETF1[i].startingBalance) + "</td>";
     html += "<td>" + formatEuros(decumulationDataETF1[i].interest) + "</td>";
     html += "<td>" + formatEuros(decumulationDataETF1[i].withdrawal) + "</td>";
