@@ -6,6 +6,8 @@
   --text-color: #1e293b;
   --sidebar-width: 350px;
   --sidebar-bg: white;
+  --heading-font: 'Outfit', system-ui, -apple-system, sans-serif;
+  --body-font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
 * {
@@ -15,7 +17,7 @@
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--body-font);
   line-height: 1.5;
   color: var(--text-color);
   background-color: var(--background-color);
@@ -59,9 +61,14 @@ body {
   padding: 2rem;
 }
 
-h1 {
-  font-size: 1.75rem;
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--heading-font);
   font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-size: 1.85rem;
   margin-bottom: 1.5rem;
   color: var(--text-color);
   text-align: center;
@@ -73,6 +80,11 @@ h2 {
   color: var(--text-color);
   border-bottom: 2px solid var(--border-color);
   padding-bottom: 0.5rem;
+}
+
+h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
 }
 
 fieldset {
