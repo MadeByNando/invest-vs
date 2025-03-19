@@ -239,9 +239,20 @@ function simulate() {
         document.querySelectorAll('.monthly-details').forEach(el => {
           el.style.display = 'none';
         });
+        
+        // Retirer la classe active de toutes les lignes d'années
+        document.querySelectorAll('.year-row').forEach(row => {
+          row.classList.remove('active');
+        });
+        
+        // Ajouter la classe active à la ligne actuelle
+        this.classList.add('active');
+        
         detailsRow.style.display = 'table-row';
       } else {
         detailsRow.style.display = 'none';
+        // Retirer la classe active de la ligne actuelle quand on ferme les détails
+        this.classList.remove('active');
       }
     });
   });
