@@ -1,0 +1,196 @@
+function formatEuros(number) {
+  return new Intl.NumberFormat('fr-FR', { 
+    style: 'currency', 
+    currency: 'EUR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(Math.round(number));
+}
+
+function simulate() {
+  // Récupération des paramètres depuis le formulaire
+  const initialCapital = parseFloat(
+    document.getElementById("initialCapital").value
+  );
+  const monthlyDeposit = parseFloat(
+    document.getElementById("monthlyDeposit").value
+  );
+  const accumulationYears = parseInt(
+    document.getElementById("accumulationYears").value
+  );
+  const annualReturn =
+    parseFloat(document.getElementById("annualReturn").value) / 100;
+
+  const feeETF1 =
+    parseFloat(document.getElementById("feeETF1").value) / 100;
+  const feeETF2 =
+    parseFloat(document.getElementById("feeETF2").value) / 100;
+
+  const retirementYears = parseInt(
+    document.getElementById("retirementYears").value
+  );
+  const netWithdrawalAnnual = parseFloat(
+    document.getElementById("netWithdrawalAnnual").value
+  );
+  const taxETF1 =
+    parseFloat(document.getElementById("taxETF1").value) / 100;
+  const taxETF2 =
+    parseFloat(document.getElementById("taxETF2").value) / 100;
+
+  // Calcul du facteur mensuel brut issu du rendement annuel
+  const monthlyGross = Math.pow(1 + annualReturn, 1 / 12);
+  // Calcul des frais mensuels (appliqués de façon linéaire)
+  const monthlyFeeETF1 = feeETF1 / 12;
+  const monthlyFeeETF2 = feeETF2 / 12;
+  // Facteurs mensuels nets pour chaque ETF (on simule un retrait linéaire des frais)
+  const monthlyNetETF1 = monthlyGross - monthlyFeeETF1;
+  const monthlyNetETF2 = monthlyGross - monthlyFeeETF2;
+
+  const totalMonths = accumulationYears * 12;
+
+  // Simulation de la phase d'accumulation
+  const accumulationDataETF1 = [];
+  const accumulationDataETF2 = [];
+
+  let balanceETF1 = initialCapital;
+  let balanceETF2 = initialCapital;
+
+  for (let month = 1; month <= totalMonths; month++) {
+    // Ajout du versement mensuel et application du facteur mensuel net
+    balanceETF1 = (balanceETF1 + monthlyDeposit) * monthlyNetETF1;
+    balanceETF2 = (balanceETF2 + monthlyDeposit) * monthlyNetETF2;
+
+    // Enregistrer les données à la fin de chaque année (tous les 12 mois)
+    if (month % 12 === 0) {
+      const year = Math.floor(month / 12);
+      accumulationDataETF1.push({ year: year, balance: balanceETF1 });
+      accumulationDataETF2.push({ year: year, balance: balanceETF2 });
+    }
+  }
+
+  // Calcul du taux annuel effectif net en décumulation à partir du taux mensuel net
+  const annualNetETF1 = Math.pow(monthlyNetETF1, 12);
+  const annualNetETF2 = Math.pow(monthlyNetETF2, 12);
+
+  // Calcul des retraits bruts à effectuer pour obtenir le retrait net désiré
+  const withdrawalGrossETF1 = netWithdrawalAnnual / (1 - taxETF1);
+  const withdrawalGrossETF2 = netWithdrawalAnnual / (1 - taxETF2);
+
+  // Simulation de la phase de décumulation
+  const decumulationDataETF1 = [];
+  const decumulationDataETF2 = [];
+
+  // Les capitaux de départ en décumulation sont les soldes fin d'accumulation
+  let decumulationBalanceETF1 = balanceETF1;
+  let decumulationBalanceETF2 = balanceETF2;
+
+  for (let year = 1; year <= retirementYears; year++) {
+    const startingBalanceETF1 = decumulationBalanceETF1;
+    const startingBalanceETF2 = decumulationBalanceETF2;
+
+    const interestETF1 = startingBalanceETF1 * (annualNetETF1 - 1);
+    const interestETF2 = startingBalanceETF2 * (annualNetETF2 - 1);
+
+    // Mise à jour du capital en appliquant le rendement puis en retirant le montant brut
+    decumulationBalanceETF1 =
+      startingBalanceETF1 * annualNetETF1 - withdrawalGrossETF1;
+    decumulationBalanceETF2 =
+      startingBalanceETF2 * annualNetETF2 - withdrawalGrossETF2;
+
+    decumulationDataETF1.push({
+      year: year,
+      startingBalance: startingBalanceETF1,
+      interest: interestETF1,
+      withdrawal: withdrawalGrossETF1,
+      endingBalance: decumulationBalanceETF1,
+    });
+    decumulationDataETF2.push({
+      year: year,
+      startingBalance: startingBalanceETF2,
+      interest: interestETF2,
+      withdrawal: withdrawalGrossETF2,
+      endingBalance: decumulationBalanceETF2,
+    });
+  }
+
+  // Construction du tableau HTML pour la phase d'accumulation
+  const resultsDiv = document.getElementById("results");
+  let html = "";
+
+  // Supprimer le message d'instruction initial
+  const emptyResults = document.querySelector(".empty-results");
+  if (emptyResults) {
+    emptyResults.remove();
+  }
+
+  html += "<h2>Phase d'accumulation</h2>";
+  html += "<div class='table-container'>";
+  html += "<table><thead><tr><th>Année</th><th>Balance ETF1</th><th>Balance ETF2</th></tr></thead><tbody>";
+  
+  for (let i = 0; i < accumulationDataETF1.length; i++) {
+    html += "<tr>";
+    html += "<td>" + accumulationDataETF1[i].year + "</td>";
+    html += "<td>" + formatEuros(accumulationDataETF1[i].balance) + "</td>";
+    html += "<td>" + formatEuros(accumulationDataETF2[i].balance) + "</td>";
+    html += "</tr>";
+  }
+  html += "</tbody></table></div>";
+
+  // Ajout d'un résumé de la phase d'accumulation
+  html += "<div class='summary-box'>";
+  html += "<h3>Résumé de la phase d'accumulation</h3>";
+  html += "<div class='summary-grid'>";
+  html += "<div class='summary-item'><span>Capital final ETF1:</span> " + formatEuros(balanceETF1) + "</div>";
+  html += "<div class='summary-item'><span>Capital final ETF2:</span> " + formatEuros(balanceETF2) + "</div>";
+  html += "<div class='summary-item'><span>Total investi:</span> " + formatEuros(initialCapital + monthlyDeposit * totalMonths) + "</div>";
+  html += "</div></div>";
+
+  html += "<h2>Phase de décumulation</h2>";
+  html += "<div class='table-container'>";
+  html += "<table><thead><tr><th>Année</th><th>Capital initial</th><th>Intérêts</th><th>Retrait</th><th>Capital final</th></tr></thead><tbody>";
+  
+  for (let i = 0; i < decumulationDataETF1.length; i++) {
+    // Ligne pour ETF1
+    html += "<tr class='etf1-row'>";
+    html += "<td rowspan='2'>" + decumulationDataETF1[i].year + "</td>";
+    html += "<td>" + formatEuros(decumulationDataETF1[i].startingBalance) + "</td>";
+    html += "<td>" + formatEuros(decumulationDataETF1[i].interest) + "</td>";
+    html += "<td>" + formatEuros(decumulationDataETF1[i].withdrawal) + "</td>";
+    html += "<td>" + formatEuros(decumulationDataETF1[i].endingBalance) + "</td>";
+    html += "</tr>";
+    
+    // Ligne pour ETF2
+    html += "<tr class='etf2-row'>";
+    html += "<td>" + formatEuros(decumulationDataETF2[i].startingBalance) + "</td>";
+    html += "<td>" + formatEuros(decumulationDataETF2[i].interest) + "</td>";
+    html += "<td>" + formatEuros(decumulationDataETF2[i].withdrawal) + "</td>";
+    html += "<td>" + formatEuros(decumulationDataETF2[i].endingBalance) + "</td>";
+    html += "</tr>";
+  }
+  html += "</tbody></table></div>";
+
+  resultsDiv.innerHTML = html;
+  
+  // Faire défiler jusqu'au début des résultats
+  document.querySelector(".content").scrollTop = 0;
+}
+
+// Initialiser l'application
+document.addEventListener("DOMContentLoaded", function() {
+  // Ajuster automatiquement la hauteur sur mobile
+  function adjustHeight() {
+    if (window.innerWidth <= 900) {
+      document.body.style.height = "auto";
+      document.body.style.overflow = "auto";
+    } else {
+      document.body.style.height = "100vh";
+      document.body.style.overflow = "hidden";
+    }
+  }
+  
+  // Exécuter une fois au chargement
+  adjustHeight();
+  
+  // Exécuter à chaque redimensionnement
+  window.addEventListener("resize", adjustHeight);
+}); 
