@@ -8,6 +8,10 @@ function formatEuros(number) {
 }
 
 function simulate() {
+  // Add calculating class to button
+  const calculateButton = document.querySelector('button[onclick="simulate()"]');
+  calculateButton.classList.add('calculating');
+  
   // Récupération des paramètres depuis le formulaire
   const initialCapital = parseFloat(
     document.getElementById("initialCapital").value
@@ -36,6 +40,11 @@ function simulate() {
     parseFloat(document.getElementById("taxETF1").value) / 100;
   const taxETF2 =
     parseFloat(document.getElementById("taxETF2").value) / 100;
+
+  // Mettre à jour les statistiques en haut
+  document.getElementById("stat-capital").textContent = formatEuros(initialCapital);
+  document.getElementById("stat-monthly").textContent = formatEuros(monthlyDeposit);
+  document.getElementById("stat-years").textContent = accumulationYears;
 
   // Obtenir l'année actuelle pour l'affichage des dates
   const currentYear = new Date().getFullYear();
@@ -137,6 +146,10 @@ function simulate() {
 
   // Construction du tableau HTML pour la phase d'accumulation
   const resultsDiv = document.getElementById("results");
+  
+  // Préserver les statistiques en haut
+  const statsGrid = resultsDiv.querySelector('.stats-grid');
+  
   let html = "";
 
   // Supprimer le message d'instruction initial
@@ -144,8 +157,70 @@ function simulate() {
   if (emptyResults) {
     emptyResults.remove();
   }
+  
+  // Ajouter la section de cartes de résumé
+  html += "<div class='result-cards'>";
+  
+  // Carte ETF1
+  html += "<div class='result-card'>";
+  html += "<div class='result-card-header'><div class='result-card-title'>ETF1</div></div>";
+  html += "<div class='result-card-value'>" + formatEuros(balanceETF1) + "</div>";
+  html += "<div class='progress-container'><div class='progress-bar' style='width: 100%'></div></div>";
+  html += "<div class='result-card-detail'><span class='detail-label'>Frais annuels</span><span class='detail-value'>" + (feeETF1 * 100).toFixed(2) + "%</span></div>";
+  html += "<div class='result-card-detail'><span class='detail-label'>Taxation</span><span class='detail-value'>" + (taxETF1 * 100) + "%</span></div>";
+  html += "</div>";
+  
+  // Carte ETF2
+  html += "<div class='result-card'>";
+  html += "<div class='result-card-header'><div class='result-card-title'>ETF2</div></div>";
+  html += "<div class='result-card-value'>" + formatEuros(balanceETF2) + "</div>";
+  html += "<div class='progress-container'><div class='progress-bar' style='width: " + (balanceETF2/balanceETF1*100) + "%'></div></div>";
+  html += "<div class='result-card-detail'><span class='detail-label'>Frais annuels</span><span class='detail-value'>" + (feeETF2 * 100).toFixed(2) + "%</span></div>";
+  html += "<div class='result-card-detail'><span class='detail-label'>Taxation</span><span class='detail-value'>" + (taxETF2 * 100) + "%</span></div>";
+  html += "</div>";
+  
+  // Carte Investissement
+  html += "<div class='result-card'>";
+  html += "<div class='result-card-header'><div class='result-card-title'>Investissement</div></div>";
+  const totalInvested = initialCapital + monthlyDeposit * totalMonths;
+  html += "<div class='result-card-value'>" + formatEuros(totalInvested) + "</div>";
+  
+  // Graphique simplifié
+  html += "<div class='chart-container'>";
+  // Sélection de 5 années pour le graphique
+  const step = Math.max(1, Math.floor(accumulationYears / 5));
+  let maxValue = 0;
+  
+  // Trouver la valeur maximale pour l'échelle
+  for (let i = 0; i < accumulationDataETF1.length; i += step) {
+    if (i < accumulationDataETF1.length) {
+      maxValue = Math.max(maxValue, accumulationDataETF1[i].balance, accumulationDataETF2[i].balance);
+    }
+  }
+  
+  // Créer les barres du graphique
+  for (let i = 0; i < accumulationDataETF1.length; i += step) {
+    if (i < accumulationDataETF1.length) {
+      const height1 = (accumulationDataETF1[i].balance / maxValue * 100);
+      html += "<div class='chart-bar' style='--target-height: " + height1 + "%'><div class='chart-label'>" + accumulationDataETF1[i].calendarYear + "</div></div>";
+    }
+  }
+  
+  html += "</div>"; // chart-container
+  html += "</div>"; // result-card
+  
+  html += "</div>"; // result-cards
 
-  html += "<h2>Phase d'accumulation</h2>";
+  // Ajouter les sections avec style de carte
+  html += "<div class='table-card'>";
+  html += "<div class='table-card-header'><h2 class='table-card-title'>Phase d'accumulation</h2></div>";
+  
+  // Ajouter les onglets
+  html += "<div class='tab-container'>";
+  html += "<div class='tab active'>Annuel</div>";
+  html += "<div class='tab'>Détails</div>";
+  html += "</div>";
+  
   html += "<div class='table-container'>";
   html += "<table class='main-table'><thead><tr><th>Année</th><th>Balance ETF1</th><th>Balance ETF2</th></tr></thead><tbody>";
   
@@ -187,18 +262,11 @@ function simulate() {
     html += "</td>";
     html += "</tr>";
   }
-  html += "</tbody></table></div>";
+  html += "</tbody></table></div></div>";
 
-  // Ajout d'un résumé de la phase d'accumulation
-  html += "<div class='summary-box'>";
-  html += "<h3>Résumé de la phase d'accumulation</h3>";
-  html += "<div class='summary-grid'>";
-  html += "<div class='summary-item'><span>Capital final ETF1:</span> " + formatEuros(balanceETF1) + "</div>";
-  html += "<div class='summary-item'><span>Capital final ETF2:</span> " + formatEuros(balanceETF2) + "</div>";
-  html += "<div class='summary-item'><span>Total investi:</span> " + formatEuros(initialCapital + monthlyDeposit * totalMonths) + "</div>";
-  html += "</div></div>";
-
-  html += "<h2>Phase de décumulation</h2>";
+  // Phase de décumulation en style carte
+  html += "<div class='table-card'>";
+  html += "<div class='table-card-header'><h2 class='table-card-title'>Phase de décumulation</h2></div>";
   html += "<div class='table-container'>";
   html += "<table><thead><tr><th>Année</th><th>ETF</th><th>Capital initial</th><th>Intérêts</th><th>Retrait</th><th>Capital final</th></tr></thead><tbody>";
   
@@ -224,9 +292,11 @@ function simulate() {
     html += "<td>" + formatEuros(decumulationDataETF2[i].endingBalance) + "</td>";
     html += "</tr>";
   }
-  html += "</tbody></table></div>";
+  html += "</tbody></table></div></div>";
 
-  resultsDiv.innerHTML = html;
+  // Préserver les statistiques lors de la mise à jour du contenu
+  const statsHtml = statsGrid ? statsGrid.outerHTML : '';
+  resultsDiv.innerHTML = statsHtml + html;
   
   // Ajouter des écouteurs d'événements pour les lignes d'années cliquables
   const yearRows = document.querySelectorAll('.year-row');
@@ -259,8 +329,22 @@ function simulate() {
     });
   });
   
+  // Ajouter des écouteurs pour les onglets
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      tabs.forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+  
   // Faire défiler jusqu'au début des résultats
   document.querySelector(".content").scrollTop = 0;
+
+  // Remove the calculating class after a slight delay to ensure animation is seen
+  setTimeout(() => {
+    calculateButton.classList.remove('calculating');
+  }, 500);
 }
 
 // Initialiser l'application
@@ -281,4 +365,13 @@ document.addEventListener("DOMContentLoaded", function() {
   
   // Exécuter à chaque redimensionnement
   window.addEventListener("resize", adjustHeight);
+
+  // Mettre à jour les statistiques au chargement
+  const initialCapital = parseFloat(document.getElementById("initialCapital").value);
+  const monthlyDeposit = parseFloat(document.getElementById("monthlyDeposit").value);
+  const accumulationYears = parseInt(document.getElementById("accumulationYears").value);
+  
+  document.getElementById("stat-capital").textContent = formatEuros(initialCapital);
+  document.getElementById("stat-monthly").textContent = formatEuros(monthlyDeposit);
+  document.getElementById("stat-years").textContent = accumulationYears;
 }); 
