@@ -226,12 +226,12 @@ function simulate() {
   }
   html += "</tbody></table></div>";
 
-  // Ajout d'un résumé de la phase d'accumulation
+  // Ajout d'un résumé de la phase d'accumulation avec des classes pour le filtrage
   html += "<div class='summary-box'>";
   html += "<h3>Résumé de la phase d'accumulation</h3>";
   html += "<div class='summary-grid'>";
-  html += "<div class='summary-item'><span>Capital final ETF1:</span> " + formatEuros(balanceETF1) + "</div>";
-  html += "<div class='summary-item'><span>Capital final ETF2:</span> " + formatEuros(balanceETF2) + "</div>";
+  html += "<div class='summary-item etf-col etf1-col'><span>Capital final ETF1:</span> " + formatEuros(balanceETF1) + "</div>";
+  html += "<div class='summary-item etf-col etf2-col'><span>Capital final ETF2:</span> " + formatEuros(balanceETF2) + "</div>";
   html += "<div class='summary-item'><span>Total investi:</span> " + formatEuros(initialCapital + monthlyDeposit * totalMonths) + "</div>";
   html += "</div></div>";
 
@@ -297,6 +297,15 @@ function simulate() {
     
     document.querySelectorAll('.monthly-table .etf2-col').forEach(col => {
       col.style.display = showETF2 ? '' : 'none';
+    });
+    
+    // Mise à jour des éléments du résumé
+    document.querySelectorAll('.summary-box .etf1-col').forEach(item => {
+      item.style.display = showETF1 ? '' : 'none';
+    });
+    
+    document.querySelectorAll('.summary-box .etf2-col').forEach(item => {
+      item.style.display = showETF2 ? '' : 'none';
     });
   }
   
