@@ -662,4 +662,36 @@ button.calculating {
 
 .etf-filter input[type="checkbox"] {
   cursor: pointer;
+}
+
+/* Styles pour les boutons secondaires */
+.secondary-button {
+  background-color: #f1f5f9;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  margin-top: 0.5rem;
+}
+
+.secondary-button:hover {
+  background-color: #e2e8f0;
+  border-color: #cbd5e1;
+}
+
+.secondary-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+#addETFButton {
+  color: var(--primary-color);
+}
+
+#removeETFButton {
+  color: #ef4444;
 } 
