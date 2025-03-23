@@ -4,9 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Invest Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="Logo-My-Invest-Hub.png" type="image/png">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="Logo-My-Invest-Hub.png" type="image/png" />
   </head>
   <body>
     <div class="app-container">
@@ -14,43 +17,89 @@
         <form id="parametersForm">
           <fieldset>
             <legend><strong>Paramètres ETF</strong></legend>
-            
+
             <div class="etf-title-container">
               <h3 id="etf1-title" class="etf-title">ETF1</h3>
-              <button type="button" class="edit-title-btn" aria-label="Modifier le nom de l'ETF1" data-target="etf1-title" style="background: transparent !important; background-color: transparent !important; box-shadow: none !important; color: white;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+              <button
+                type="button"
+                class="edit-title-btn"
+                aria-label="Modifier le nom de l'ETF1"
+                data-target="etf1-title"
+                style="
+                  background: transparent !important;
+                  background-color: transparent !important;
+                  box-shadow: none !important;
+                  color: white;
+                "
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"
+                  ></path>
                 </svg>
               </button>
             </div>
-            
+
             <div class="form-group">
               <label for="feeETF1">Frais annuels ETF1 (%) :</label>
               <input
                 type="number"
                 id="feeETF1"
-                value="0.20"
+                value="0.25"
                 step="any"
                 required
               />
             </div>
 
-            <div id="etf2-container" style="display: none;">
+            <div id="etf2-container" style="display: none">
               <div class="etf-title-container">
                 <h3 id="etf2-title" class="etf-title">ETF2</h3>
-                <button type="button" class="edit-title-btn" aria-label="Modifier le nom de l'ETF2" data-target="etf2-title" style="background: transparent !important; background-color: transparent !important; box-shadow: none !important; color: white;">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                <button
+                  type="button"
+                  class="edit-title-btn"
+                  aria-label="Modifier le nom de l'ETF2"
+                  data-target="etf2-title"
+                  style="
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    box-shadow: none !important;
+                    color: white;
+                  "
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"
+                    ></path>
                   </svg>
                 </button>
               </div>
-              
+
               <div class="form-group">
                 <label for="feeETF2">Frais annuels ETF2 (%) :</label>
                 <input
                   type="number"
                   id="feeETF2"
-                  value="0.25"
+                  value="0.20"
                   step="any"
                   required
                 />
@@ -58,8 +107,17 @@
             </div>
 
             <div class="form-group">
-              <button type="button" id="addETFButton" class="secondary-button">+ Ajouter un ETF</button>
-              <button type="button" id="removeETFButton" class="secondary-button" style="display: none;">- Supprimer ETF2</button>
+              <button type="button" id="addETFButton" class="secondary-button">
+                + Ajouter un ETF
+              </button>
+              <button
+                type="button"
+                id="removeETFButton"
+                class="secondary-button"
+                style="display: none"
+              >
+                - Supprimer ETF2
+              </button>
             </div>
           </fieldset>
 
@@ -112,7 +170,9 @@
             </div>
 
             <div class="form-group">
-              <label for="netWithdrawalAnnual">Retrait net annuel désiré (€) :</label>
+              <label for="netWithdrawalAnnual"
+                >Retrait net annuel désiré (€) :</label
+              >
               <input
                 type="number"
                 id="netWithdrawalAnnual"
@@ -127,20 +187,20 @@
                 <input
                   type="number"
                   id="taxETF1"
-                  value="30"
+                  value="17.2"
                   step="any"
                   required
                 />
               </div>
             </div>
 
-            <div id="taxETF2-container" style="display: none;">
+            <div id="taxETF2-container" style="display: none">
               <div class="form-group">
                 <label for="taxETF2">Taxe ETF2 (%) :</label>
                 <input
                   type="number"
                   id="taxETF2"
-                  value="18"
+                  value="30"
                   step="any"
                   required
                 />
@@ -154,13 +214,20 @@
 
       <main class="content">
         <div class="app-header">
-          <img src="Logo-My-Invest-Hub.png" alt="My Invest Hub Logo" class="app-logo">
+          <img
+            src="Logo-My-Invest-Hub.png"
+            alt="My Invest Hub Logo"
+            class="app-logo"
+          />
           <h1>My Invest Hub</h1>
         </div>
-        
+
         <div id="results">
           <div class="empty-results">
-            <p>Remplissez le formulaire et cliquez sur "Calculer" pour voir les résultats</p>
+            <p>
+              Remplissez le formulaire et cliquez sur "Calculer" pour voir les
+              résultats
+            </p>
           </div>
         </div>
       </main>

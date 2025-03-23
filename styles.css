@@ -700,7 +700,6 @@ button.calculating {
 .etf-title-container {
   display: flex;
   align-items: center;
-  margin-bottom: 0.8rem;
   position: relative;
   padding-right: 25px;
   min-height: 28px;
@@ -766,3 +765,7 @@ button.calculating {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
 } 
+
+#etf2-container {
+  margin-top: 20px;
+}
