@@ -25,14 +25,14 @@ function createETFFilter(etfs, tableId, updateFunction) {
     
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
-    checkbox.id = `${tableId}-${etf}`;
-    checkbox.value = etf;
+    checkbox.id = `${tableId}-${etf.id}`;
+    checkbox.value = etf.id;
     checkbox.checked = true;
     checkbox.addEventListener('change', updateFunction);
     
     const checkboxLabel = document.createElement('label');
-    checkboxLabel.htmlFor = `${tableId}-${etf}`;
-    checkboxLabel.textContent = etf;
+    checkboxLabel.htmlFor = `${tableId}-${etf.id}`;
+    checkboxLabel.textContent = etf.name;
     
     checkboxWrapper.appendChild(checkbox);
     checkboxWrapper.appendChild(checkboxLabel);
@@ -46,6 +46,10 @@ function createETFFilter(etfs, tableId, updateFunction) {
 function simulate() {
   // Vérifier si ETF2 est actif
   const isETF2Active = document.getElementById('etf2-container').style.display !== 'none';
+  
+  // Récupérer les noms des ETFs
+  const etf1Name = document.getElementById('etf1-title').textContent;
+  const etf2Name = isETF2Active ? document.getElementById('etf2-title').textContent : 'ETF2';
   
   // Récupération des paramètres depuis le formulaire
   const initialCapital = parseFloat(
@@ -205,16 +209,16 @@ function simulate() {
   }
 
   // Les ETFs à afficher dépendent de si ETF2 est actif
-  const etfsToDisplay = isETF2Active ? ['ETF1', 'ETF2'] : ['ETF1'];
+  const etfsToDisplay = isETF2Active ? [{id: 'ETF1', name: etf1Name}, {id: 'ETF2', name: etf2Name}] : [{id: 'ETF1', name: etf1Name}];
 
   html += "<h2>Phase d'accumulation</h2>";
   html += "<div class='table-container' id='accumulation-table-container'>";
   html += "<div id='accumulation-filter'></div>";
   
   // Ajuster les en-têtes du tableau en fonction des ETFs actifs
-  html += "<table class='main-table' id='accumulation-table'><thead><tr><th>Année</th><th class='etf-col etf1-col'>Balance ETF1</th>";
+  html += "<table class='main-table' id='accumulation-table'><thead><tr><th>Année</th><th class='etf-col etf1-col'>Balance " + etf1Name + "</th>";
   if (isETF2Active) {
-    html += "<th class='etf-col etf2-col'>Balance ETF2</th>";
+    html += "<th class='etf-col etf2-col'>Balance " + etf2Name + "</th>";
   }
   html += "</tr></thead><tbody>";
   
@@ -238,9 +242,9 @@ function simulate() {
     html += "<thead class='monthly-header'>";
     html += "<tr>";
     html += "<th class='month-column'>Mois</th>";
-    html += "<th class='etf-col etf1-col'>ETF1</th>";
+    html += "<th class='etf-col etf1-col'>" + etf1Name + "</th>";
     if (isETF2Active) {
-      html += "<th class='etf-col etf2-col'>ETF2</th>";
+      html += "<th class='etf-col etf2-col'>" + etf2Name + "</th>";
     }
     html += "</tr>";
     html += "</thead>";
@@ -268,9 +272,9 @@ function simulate() {
   html += "<div class='summary-box'>";
   html += "<h3>Résumé de la phase d'accumulation</h3>";
   html += "<div class='summary-grid'>";
-  html += "<div class='summary-item etf-col etf1-col'><span>Capital final ETF1:</span> " + formatEuros(balanceETF1) + "</div>";
+  html += "<div class='summary-item etf-col etf1-col'><span>Capital final " + etf1Name + ":</span> " + formatEuros(balanceETF1) + "</div>";
   if (isETF2Active) {
-    html += "<div class='summary-item etf-col etf2-col'><span>Capital final ETF2:</span> " + formatEuros(balanceETF2) + "</div>";
+    html += "<div class='summary-item etf-col etf2-col'><span>Capital final " + etf2Name + ":</span> " + formatEuros(balanceETF2) + "</div>";
   }
   html += "<div class='summary-item'><span>Total investi:</span> " + formatEuros(initialCapital + monthlyDeposit * totalMonths) + "</div>";
   html += "</div></div>";
@@ -295,7 +299,7 @@ function simulate() {
       html += `<td class='year-cell'>${decumulationYear}</td>`;
     }
     
-    html += "<td>ETF1</td>";
+    html += `<td>${etf1Name}</td>`;
     html += "<td>" + formatEuros(decumulationDataETF1[i].startingBalance) + "</td>";
     html += "<td>" + formatEuros(decumulationDataETF1[i].interest) + "</td>";
     html += "<td>" + formatEuros(decumulationDataETF1[i].withdrawal) + "</td>";
@@ -305,7 +309,7 @@ function simulate() {
     // Ligne pour ETF2 seulement s'il est actif
     if (isETF2Active) {
       html += `<tr class='etf2-row' data-etf='ETF2' data-year-id='${yearId}'>`;
-      html += "<td>ETF2</td>";
+      html += `<td>${etf2Name}</td>`;
       html += "<td>" + formatEuros(decumulationDataETF2[i].startingBalance) + "</td>";
       html += "<td>" + formatEuros(decumulationDataETF2[i].interest) + "</td>";
       html += "<td>" + formatEuros(decumulationDataETF2[i].withdrawal) + "</td>";
@@ -447,11 +451,14 @@ function simulate() {
   document.querySelector(".content").scrollTop = 0;
 }
 
-// Ajouter des gestionnaires d'événements pour les boutons d'ajout/suppression d'ETF
+// Ajouter des gestionnaires d'événements pour les boutons d'ajout/suppression d'ETF et d'édition de titres
 document.addEventListener("DOMContentLoaded", function() {
   // Initialiser l'application
   const addETFButton = document.getElementById('addETFButton');
   const removeETFButton = document.getElementById('removeETFButton');
+  
+  // Fonctionnalité d'édition des noms d'ETF
+  setupETFTitleEditing();
   
   if (addETFButton && removeETFButton) {
     // Variables pour suivre l'état
@@ -502,4 +509,67 @@ document.addEventListener("DOMContentLoaded", function() {
   
   // Exécuter à chaque redimensionnement
   window.addEventListener("resize", adjustHeight);
-}); 
+});
+
+// Fonction pour configurer l'édition des titres d'ETF
+function setupETFTitleEditing() {
+  const editButtons = document.querySelectorAll('.edit-title-btn');
+  
+  editButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      const targetId = this.getAttribute('data-target');
+      const titleElement = document.getElementById(targetId);
+      // Extraire uniquement le texte du titre
+      const currentTitle = titleElement.textContent.trim();
+      
+      // Créer un champ de saisie pour remplacer le titre
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = currentTitle;
+      input.className = 'edit-title-input';
+      
+      // Vider l'élément de titre et y insérer le champ de saisie
+      titleElement.innerHTML = '';
+      titleElement.appendChild(input);
+      input.focus();
+      
+      // Fonction pour enregistrer le nouveau titre
+      function saveNewTitle() {
+        const newTitle = input.value.trim();
+        if (newTitle) {
+          // Restaurer le texte du titre
+          titleElement.textContent = newTitle;
+          
+          // Mettre à jour les labels si nécessaire
+          if (targetId === 'etf1-title') {
+            document.querySelector('label[for="feeETF1"]').textContent = `Frais annuels ${newTitle} (%) :`;
+            document.querySelector('label[for="taxETF1"]').textContent = `Taxe ${newTitle} (%) :`;
+          } else if (targetId === 'etf2-title') {
+            document.querySelector('label[for="feeETF2"]').textContent = `Frais annuels ${newTitle} (%) :`;
+            document.querySelector('label[for="taxETF2"]').textContent = `Taxe ${newTitle} (%) :`;
+          }
+          
+          // Relancer la simulation pour mettre à jour les tableaux avec les nouveaux noms
+          simulate();
+        } else {
+          // Restaurer l'ancien titre si vide
+          titleElement.textContent = currentTitle;
+        }
+      }
+      
+      // Gérer la validation par touche Entrée ou perte de focus
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          saveNewTitle();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          titleElement.textContent = currentTitle;
+        }
+      });
+      
+      input.addEventListener('blur', saveNewTitle);
+    });
+  });
+} 

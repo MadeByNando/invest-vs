@@ -593,13 +593,13 @@ button.calculating {
   color: white;
 }
 
-.sidebar button {
+.sidebar button:not(.edit-title-btn) {
   background-color: white;
   color: var(--sidebar-bg);
   font-weight: 600;
 }
 
-.sidebar button:hover {
+.sidebar button:not(.edit-title-btn):hover {
   background-color: rgba(255, 255, 255, 0.9);
 }
 
@@ -694,4 +694,75 @@ button.calculating {
 
 #removeETFButton {
   color: #ef4444;
+}
+
+/* Styles pour les titres d'ETF */
+.etf-title-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  position: relative;
+  padding-right: 25px;
+  min-height: 28px;
+}
+
+.etf-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  line-height: 28px;
+}
+
+.edit-title-btn {
+  position: relative;
+  top: -2px;
+  background: transparent;
+  border: none !important;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+  margin: 0;
+  transition: color 0.2s;
+  width: 20px;
+  height: 20px;
+  box-shadow: none !important;
+}
+
+.edit-title-btn:hover {
+  color: white;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.edit-title-btn:focus {
+  outline: none;
+  color: white;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.edit-title-input {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color);
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  width: 200px;
+  background-color: white;
+  height: 28px;
+  line-height: normal;
+  box-sizing: border-box;
+}
+
+.edit-title-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
 } 

@@ -14,6 +14,16 @@
         <form id="parametersForm">
           <fieldset>
             <legend><strong>Paramètres ETF</strong></legend>
+            
+            <div class="etf-title-container">
+              <h3 id="etf1-title" class="etf-title">ETF1</h3>
+              <button type="button" class="edit-title-btn" aria-label="Modifier le nom de l'ETF1" data-target="etf1-title" style="background: transparent !important; background-color: transparent !important; box-shadow: none !important; color: white;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                </svg>
+              </button>
+            </div>
+            
             <div class="form-group">
               <label for="feeETF1">Frais annuels ETF1 (%) :</label>
               <input
@@ -26,6 +36,15 @@
             </div>
 
             <div id="etf2-container" style="display: none;">
+              <div class="etf-title-container">
+                <h3 id="etf2-title" class="etf-title">ETF2</h3>
+                <button type="button" class="edit-title-btn" aria-label="Modifier le nom de l'ETF2" data-target="etf2-title" style="background: transparent !important; background-color: transparent !important; box-shadow: none !important; color: white;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                  </svg>
+                </button>
+              </div>
+              
               <div class="form-group">
                 <label for="feeETF2">Frais annuels ETF2 (%) :</label>
                 <input
@@ -97,7 +116,7 @@
               <input
                 type="number"
                 id="netWithdrawalAnnual"
-                value="21600"
+                value="30000"
                 required
               />
             </div>
