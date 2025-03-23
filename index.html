@@ -13,6 +13,31 @@
       <aside class="sidebar">
         <form id="parametersForm">
           <fieldset>
+            <legend><strong>Paramètres ETF</strong></legend>
+            <div class="form-group">
+              <label for="feeETF1">Frais annuels ETF1 (%) :</label>
+              <input
+                type="number"
+                id="feeETF1"
+                value="0.20"
+                step="any"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="feeETF2">Frais annuels ETF2 (%) :</label>
+              <input
+                type="number"
+                id="feeETF2"
+                value="0.25"
+                step="any"
+                required
+              />
+            </div>
+          </fieldset>
+
+          <fieldset>
             <legend><strong>Phase d'accumulation</strong></legend>
             <div class="form-group">
               <label for="initialCapital">Capital initial (€) :</label>
@@ -47,31 +72,6 @@
                 type="number"
                 id="annualReturn"
                 value="7"
-                step="any"
-                required
-              />
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend><strong>Paramètres ETF</strong></legend>
-            <div class="form-group">
-              <label for="feeETF1">Frais annuels ETF1 (%) :</label>
-              <input
-                type="number"
-                id="feeETF1"
-                value="0.20"
-                step="any"
-                required
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="feeETF2">Frais annuels ETF2 (%) :</label>
-              <input
-                type="number"
-                id="feeETF2"
-                value="0.25"
                 step="any"
                 required
               />
