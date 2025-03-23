@@ -7,6 +7,42 @@ function formatEuros(number) {
   }).format(Math.round(number));
 }
 
+// Fonction pour créer un filtre d'ETF
+function createETFFilter(etfs, tableId, updateFunction) {
+  const filterContainer = document.createElement('div');
+  filterContainer.className = 'etf-filter';
+  
+  const label = document.createElement('label');
+  label.textContent = 'Filtrer par ETF:';
+  filterContainer.appendChild(label);
+  
+  const checkboxContainer = document.createElement('div');
+  checkboxContainer.className = 'checkbox-container';
+  
+  etfs.forEach(etf => {
+    const checkboxWrapper = document.createElement('div');
+    checkboxWrapper.className = 'checkbox-wrapper';
+    
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = `${tableId}-${etf}`;
+    checkbox.value = etf;
+    checkbox.checked = true;
+    checkbox.addEventListener('change', updateFunction);
+    
+    const checkboxLabel = document.createElement('label');
+    checkboxLabel.htmlFor = `${tableId}-${etf}`;
+    checkboxLabel.textContent = etf;
+    
+    checkboxWrapper.appendChild(checkbox);
+    checkboxWrapper.appendChild(checkboxLabel);
+    checkboxContainer.appendChild(checkboxWrapper);
+  });
+  
+  filterContainer.appendChild(checkboxContainer);
+  return filterContainer;
+}
+
 function simulate() {
   // Récupération des paramètres depuis le formulaire
   const initialCapital = parseFloat(
@@ -146,16 +182,17 @@ function simulate() {
   }
 
   html += "<h2>Phase d'accumulation</h2>";
-  html += "<div class='table-container'>";
-  html += "<table class='main-table'><thead><tr><th>Année</th><th>Balance ETF1</th><th>Balance ETF2</th></tr></thead><tbody>";
+  html += "<div class='table-container' id='accumulation-table-container'>";
+  html += "<div id='accumulation-filter'></div>";
+  html += "<table class='main-table' id='accumulation-table'><thead><tr><th>Année</th><th class='etf-col etf1-col'>Balance ETF1</th><th class='etf-col etf2-col'>Balance ETF2</th></tr></thead><tbody>";
   
   for (let i = 0; i < accumulationDataETF1.length; i++) {
     const simulationYear = accumulationDataETF1[i].year;
     const calendarYear = accumulationDataETF1[i].calendarYear;
     html += "<tr class='year-row' data-year='" + calendarYear + "'>";
     html += "<td class='clickable-year'>" + calendarYear + "</td>";
-    html += "<td>" + formatEuros(accumulationDataETF1[i].balance) + "</td>";
-    html += "<td>" + formatEuros(accumulationDataETF2[i].balance) + "</td>";
+    html += "<td class='etf-col etf1-col'>" + formatEuros(accumulationDataETF1[i].balance) + "</td>";
+    html += "<td class='etf-col etf2-col'>" + formatEuros(accumulationDataETF2[i].balance) + "</td>";
     html += "</tr>";
     
     // Ajouter une ligne pour les détails mensuels (initialement cachée)
@@ -167,8 +204,8 @@ function simulate() {
     html += "<thead class='monthly-header'>";
     html += "<tr>";
     html += "<th class='month-column'>Mois</th>";
-    html += "<th class='etf1-column'>ETF1</th>";
-    html += "<th class='etf2-column'>ETF2</th>";
+    html += "<th class='etf-col etf1-col'>ETF1</th>";
+    html += "<th class='etf-col etf2-col'>ETF2</th>";
     html += "</tr>";
     html += "</thead>";
     html += "<tbody>";
@@ -178,8 +215,8 @@ function simulate() {
     for (let month = 0; month < 12; month++) {
       html += "<tr>";
       html += "<td class='month-column'>" + monthNames[month] + "</td>";
-      html += "<td class='etf1-column'>" + formatEuros(monthlyDataETF1[calendarYear][month]) + "</td>";
-      html += "<td class='etf2-column'>" + formatEuros(monthlyDataETF2[calendarYear][month]) + "</td>";
+      html += "<td class='etf-col etf1-col'>" + formatEuros(monthlyDataETF1[calendarYear][month]) + "</td>";
+      html += "<td class='etf-col etf2-col'>" + formatEuros(monthlyDataETF2[calendarYear][month]) + "</td>";
       html += "</tr>";
     }
     
@@ -199,15 +236,18 @@ function simulate() {
   html += "</div></div>";
 
   html += "<h2>Phase de décumulation</h2>";
-  html += "<div class='table-container'>";
-  html += "<table><thead><tr><th>Année</th><th>ETF</th><th>Capital initial</th><th>Intérêts</th><th>Retrait</th><th>Capital final</th></tr></thead><tbody>";
+  html += "<div class='table-container' id='decumulation-table-container'>";
+  html += "<div id='decumulation-filter'></div>";
+  html += "<table id='decumulation-table'><thead><tr><th>Année</th><th>ETF</th><th>Capital initial</th><th>Intérêts</th><th>Retrait</th><th>Capital final</th></tr></thead><tbody>";
   
   const decumulationStartYear = currentYear + accumulationYears;
   for (let i = 0; i < decumulationDataETF1.length; i++) {
     const decumulationYear = decumulationStartYear + i;
+    const yearId = `year-${decumulationYear}`;
+    
     // Ligne pour ETF1
-    html += "<tr class='etf1-row'>";
-    html += "<td rowspan='2'>" + decumulationYear + "</td>";
+    html += `<tr class='etf1-row' data-etf='ETF1' data-year-id='${yearId}'>`;
+    html += `<td class='year-cell' rowspan='2'>${decumulationYear}</td>`;
     html += "<td>ETF1</td>";
     html += "<td>" + formatEuros(decumulationDataETF1[i].startingBalance) + "</td>";
     html += "<td>" + formatEuros(decumulationDataETF1[i].interest) + "</td>";
@@ -216,7 +256,7 @@ function simulate() {
     html += "</tr>";
     
     // Ligne pour ETF2
-    html += "<tr class='etf2-row'>";
+    html += `<tr class='etf2-row' data-etf='ETF2' data-year-id='${yearId}'>`;
     html += "<td>ETF2</td>";
     html += "<td>" + formatEuros(decumulationDataETF2[i].startingBalance) + "</td>";
     html += "<td>" + formatEuros(decumulationDataETF2[i].interest) + "</td>";
@@ -227,6 +267,90 @@ function simulate() {
   html += "</tbody></table></div>";
 
   resultsDiv.innerHTML = html;
+  
+  // Ajouter le filtre pour le tableau d'accumulation
+  const accumulationFilter = createETFFilter(['ETF1', 'ETF2'], 'accumulation', updateAccumulationTableDisplay);
+  document.getElementById('accumulation-filter').appendChild(accumulationFilter);
+  
+  // Ajouter le filtre pour le tableau de décumulation
+  const decumulationFilter = createETFFilter(['ETF1', 'ETF2'], 'decumulation', updateDecumulationTableDisplay);
+  document.getElementById('decumulation-filter').appendChild(decumulationFilter);
+  
+  // Fonction pour mettre à jour l'affichage du tableau d'accumulation
+  function updateAccumulationTableDisplay() {
+    const showETF1 = document.getElementById('accumulation-ETF1').checked;
+    const showETF2 = document.getElementById('accumulation-ETF2').checked;
+    
+    // Mise à jour des colonnes dans le tableau principal
+    document.querySelectorAll('#accumulation-table .etf1-col').forEach(col => {
+      col.style.display = showETF1 ? '' : 'none';
+    });
+    
+    document.querySelectorAll('#accumulation-table .etf2-col').forEach(col => {
+      col.style.display = showETF2 ? '' : 'none';
+    });
+    
+    // Mise à jour des colonnes dans les détails mensuels
+    document.querySelectorAll('.monthly-table .etf1-col').forEach(col => {
+      col.style.display = showETF1 ? '' : 'none';
+    });
+    
+    document.querySelectorAll('.monthly-table .etf2-col').forEach(col => {
+      col.style.display = showETF2 ? '' : 'none';
+    });
+  }
+  
+  // Fonction pour mettre à jour l'affichage du tableau de décumulation
+  function updateDecumulationTableDisplay() {
+    const showETF1 = document.getElementById('decumulation-ETF1').checked;
+    const showETF2 = document.getElementById('decumulation-ETF2').checked;
+    
+    // Obtenir tous les IDs d'années uniques
+    const yearIds = new Set();
+    document.querySelectorAll('#decumulation-table [data-year-id]').forEach(row => {
+      yearIds.add(row.getAttribute('data-year-id'));
+    });
+    
+    // Traiter chaque année séparément
+    yearIds.forEach(yearId => {
+      const etf1Row = document.querySelector(`#decumulation-table .etf1-row[data-year-id="${yearId}"]`);
+      const etf2Row = document.querySelector(`#decumulation-table .etf2-row[data-year-id="${yearId}"]`);
+      
+      if (!etf1Row || !etf2Row) return;
+      
+      // Afficher ou masquer selon les filtres
+      etf1Row.style.display = showETF1 ? '' : 'none';
+      etf2Row.style.display = showETF2 ? '' : 'none';
+      
+      // Gérer la cellule d'année
+      const yearCell = etf1Row.querySelector('.year-cell');
+      if (!yearCell) return;
+      
+      // Si les deux ETFs sont visibles
+      if (showETF1 && showETF2) {
+        yearCell.rowSpan = 2;
+        
+        // S'assurer que ETF2 n'a pas de cellule d'année
+        if (etf2Row.cells[0].classList.contains('year-cell')) {
+          etf2Row.removeChild(etf2Row.cells[0]);
+        }
+      } 
+      // Si seulement ETF1 est visible
+      else if (showETF1 && !showETF2) {
+        yearCell.rowSpan = 1;
+      } 
+      // Si seulement ETF2 est visible
+      else if (!showETF1 && showETF2) {
+        // Copier l'année de ETF1 vers ETF2 si elle n'existe pas déjà
+        if (!etf2Row.querySelector('.year-cell')) {
+          const newYearCell = yearCell.cloneNode(true);
+          newYearCell.rowSpan = 1;
+          etf2Row.insertBefore(newYearCell, etf2Row.firstChild);
+        }
+      }
+      // Si aucun ETF n'est visible, on ne fait rien car les lignes sont déjà masquées
+    });
+  }
   
   // Ajouter des écouteurs d'événements pour les lignes d'années cliquables
   const yearRows = document.querySelectorAll('.year-row');
