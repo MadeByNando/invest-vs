@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Tu coderas toujours en respectant les meilleures pratiques comme le ferait un excellent développeur expert
+- Il ne faut surtout pas générer de code spaghetti !
+- Fais toujours attention à respecter les meilleurs pratiques en html, css et javascript.
+- Vérifie toujours, lorsque tu ajoutes une fonctionnalité, que tu ne vas pas dupliquer de code.
+- Chaque fois que je te demande d'effectuer une correction, tu vérifieras également, après avoir fait le nécessaire, qu'il n'y a pas de code inutile qui est resté. Tu vérifieras bien également si le code est optimal, compréhensible, et donc qu'il respecte toujours les meilleures pratiques.
